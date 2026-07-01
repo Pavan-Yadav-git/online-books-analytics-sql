@@ -199,5 +199,7 @@ async def lifespan(app):
 app = Starlette(routes=routes, lifespan=lifespan)
 
 if __name__ == '__main__':
-    # Start server locally on port 8080
-    uvicorn.run("app:app", host="127.0.0.1", port=8080, log_level="info", reload=False)
+    # Render sets the PORT environment variable. Fall back to 8080 for local testing.
+    port = int(os.environ.get("PORT", 8080))
+    # Bind to 0.0.0.0 to allow Render/external routing to access the container
+    uvicorn.run("app:app", host="0.0.0.0", port=port, log_level="info", reload=False)
