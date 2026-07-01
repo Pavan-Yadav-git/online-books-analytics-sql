@@ -6,7 +6,7 @@ This portfolio maps out a real-world scenario of an **Online Bookstore** databas
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
 *   **Python-Driven SQL Executor:** Executes custom SQL queries (joins, subqueries, aggregates, window functions) on the backend using Python's native `sqlite3` and returns formatted JSON datasets to the frontend.
 *   **25 Business Query Presets:** A structured portfolio of 25 questions classified by complexity (Basic, Advanced, Expert) displaying detailed SQL code, descriptions, and results. (All emojis have been removed from query strings to ensure clean, valid SQL execution).
@@ -18,7 +18,7 @@ This portfolio maps out a real-world scenario of an **Online Bookstore** databas
 
 ---
 
-## 📊 Database Schema
+##  Database Schema
 
 The database model is fully normalized to 3NF:
 
@@ -60,7 +60,7 @@ The database model is fully normalized to 3NF:
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 ├── Books.csv                # Raw books dataset (500 records)
@@ -76,7 +76,7 @@ The database model is fully normalized to 3NF:
 
 ---
 
-## 🛠️ Local Installation & Development
+##  Local Installation & Development
 
 To run the application locally on your machine:
 
@@ -101,7 +101,7 @@ To run the application locally on your machine:
 
 ---
 
-## 🌐 API Reference Endpoints
+##  API Reference Endpoints
 
 The Python backend exposes the following REST APIs:
 *   `POST /api/execute`: Accepts JSON body `{"sql": "..."}` and returns query results, column headers, and execution metrics.
@@ -111,15 +111,4 @@ The Python backend exposes the following REST APIs:
 
 ---
 
-## 📦 Online Deployment Options
 
-Because this project runs a Python backend, it is not suited for static web hosts like GitHub Pages. Instead, you can deploy it for free directly from your GitHub repo using full-stack hosting providers:
-
-### Render Deployment
-1.  Sign in to [Render](https://render.com) and link your GitHub account.
-2.  Click **New +** ➔ **Web Service** and select your repository.
-3.  Set the following configurations:
-    *   **Environment:** `Python`
-    *   **Build Command:** `pip install -r requirements.txt`
-    *   **Start Command:** `python app.py`
-4.  Click **Deploy Web Service** and your dashboard will be online!
