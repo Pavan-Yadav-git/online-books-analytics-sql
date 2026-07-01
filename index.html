@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL | Online Bookstore Analytics Engine</title>
+    
+    <!-- Tailwind CSS for modern layouts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        zinc: {
+                            950: '#09090b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+
+    
+    <!-- Custom stylesheet for premium styling overrides -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen tech-grid-bg relative selection:bg-indigo-500/30 selection:text-indigo-200">
+    
+    <!-- Decorative Glowing Orbs -->
+    <div class="glow-orb-indigo top-0 left-0"></div>
+    <div class="glow-orb-emerald bottom-0 right-0"></div>
+
+    <div class="relative z-10 flex flex-col min-h-screen">
+        
+        <!-- Header Section -->
+        <header class="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                
+                <!-- Title & Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-zinc-100 via-indigo-200 to-indigo-400 bg-clip-text text-transparent">
+                            SQL Analytics- By Pavan Yadav
+                        </h1>
+                        <p class="text-xs text-zinc-400 font-medium">Online Bookstore Database Engine</p>
+                    </div>
+                </div>
+
+                <!-- Database Status Indicator -->
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-zinc-800">
+                        <span id="db-status-indicator" class="w-2.5 h-2.5 rounded-full bg-zinc-600 animate-pulse"></span>
+                        <span id="db-status-text" class="text-xs font-mono text-zinc-400">Connecting to Python Server...</span>
+                    </div>
+                    
+
+                </div>
+            </div>
+
+            <!-- Tab Navigation Bar -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex space-x-1" aria-label="Tabs">
+                    <button data-tab-target="#tab-console" class="border-b-2 border-indigo-500 bg-indigo-950/20 text-indigo-400 px-4 py-3 text-sm font-semibold transition-all">
+                        💻 SQL Query Console
+                    </button>
+                    <button data-tab-target="#tab-dashboard" class="border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 px-4 py-3 text-sm font-semibold transition-all">
+                        📊 Dashboard & Analytics
+                    </button>
+                    <button data-tab-target="#tab-explorer" class="border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 px-4 py-3 text-sm font-semibold transition-all">
+                        📂 Database Explorer
+                    </button>
+                    <button data-tab-target="#tab-docs" class="border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 px-4 py-3 text-sm font-semibold transition-all">
+                        📖 Problem Statement & Docs
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Body Content -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- TAB 1: DASHBOARD & ANALYTICS -->
+            <section id="tab-dashboard" class="tab-content space-y-8">
+                
+                <!-- KPI Counters Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <div class="glass-panel glass-panel-hover p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider block">Total Revenue</span>
+                            <span id="kpi-revenue" class="text-2xl font-black mt-1 text-indigo-300 block font-mono">$0.00</span>
+                        </div>
+                        <div class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel glass-panel-hover p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider block">Books Sold</span>
+                            <span id="kpi-books" class="text-2xl font-black mt-1 text-emerald-300 block font-mono">0</span>
+                        </div>
+                        <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel glass-panel-hover p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider block">Active Customers</span>
+                            <span id="kpi-customers" class="text-2xl font-black mt-1 text-purple-300 block font-mono">0</span>
+                        </div>
+                        <div class="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl text-purple-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel glass-panel-hover p-5 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider block">Book Genres</span>
+                            <span id="kpi-genres" class="text-2xl font-black mt-1 text-orange-300 block font-mono">0</span>
+                        </div>
+                        <div class="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl text-orange-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4 1.253"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Matrix Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="h-[280px]">
+                            <canvas id="chart-genre-revenue"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="h-[280px]">
+                            <canvas id="chart-sales-trend"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="h-[280px]">
+                            <canvas id="chart-top-authors"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="h-[280px]">
+                            <canvas id="chart-inventory-analysis"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: SQL QUERY CONSOLE -->
+            <section id="tab-console" class="tab-content active space-y-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    <!-- Left Sidebar (25 Presets Quick Selector) -->
+                    <div class="lg:col-span-4 flex flex-col gap-4">
+                        <div class="glass-panel p-4 rounded-2xl flex flex-col h-[650px]">
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-3 border-b border-zinc-800 pb-2">
+                                Query Portfolio Presets
+                            </h3>
+                            <!-- Search filter if desired, otherwise scrollable list -->
+                            <div id="sidebar-query-list" class="flex-grow overflow-y-auto pr-1 space-y-1.5 scrollbar-thin">
+                                <!-- Loaded dynamically by JavaScript -->
+                                <div class="space-y-2 py-4 text-center text-zinc-500 italic text-sm shimmer-load h-full rounded-xl"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column (Query Editor, Info & Execution Results) -->
+                    <div class="lg:col-span-8 flex flex-col gap-5">
+                        
+                        <!-- Question selector & Description panel -->
+                        <div class="glass-panel p-5 rounded-2xl space-y-4">
+                            
+                            <!-- Dropdown Question Selector -->
+                            <div>
+                                <label for="query-select" class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                                    Dropdown Question Selector
+                                </label>
+                                <select id="query-select" class="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 cursor-pointer font-medium">
+                                    <option value="" disabled selected>Select a business question to query...</option>
+                                    <!-- Options loaded dynamically -->
+                                </select>
+                            </div>
+
+                            <!-- Selected Question Info -->
+                            <div class="bg-zinc-900/50 rounded-xl p-4 border border-zinc-800/80 space-y-2">
+                                <h3 id="query-title-display" class="font-extrabold text-sm text-zinc-200">
+                                    Select a query to display explanation
+                                </h3>
+                                <p id="query-desc-display" class="text-xs text-zinc-400 leading-relaxed">
+                                    An explanation of the selected question, its business requirements, and the technical SQL commands used to solve it will display here.
+                                </p>
+                                <div class="pt-2 flex flex-wrap gap-2" id="query-concepts">
+                                    <!-- Badges load dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Editor Panel -->
+                        <div class="glass-panel p-5 rounded-2xl space-y-3 relative">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400 font-mono">
+                                    SQL Query Console
+                                </span>
+                                <span class="text-[10px] text-zinc-500 font-mono">
+                                    Hotkeys: [Ctrl + Enter] to run
+                                </span>
+                            </div>
+                            
+                            <!-- Textarea console editor -->
+                            <div class="relative">
+                                <textarea id="sql-editor-textarea" class="sql-editor w-full h-[220px] rounded-xl p-4 text-sm font-mono focus:ring-0 focus:outline-none" placeholder="SELECT * FROM Books LIMIT 5;"></textarea>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-1">
+                                <!-- Schema Explorer Drawer Toggle -->
+                                <button onclick="document.getElementById('schema-panel').classList.toggle('hidden')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-300 border border-zinc-800 hover:bg-zinc-800 transition-colors flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                    </svg>
+                                    Toggle Schema Explorer
+                                </button>
+                                
+                                <button id="run-query-btn" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Run Query
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Schema Explorer Panel -->
+                        <div id="schema-panel" class="glass-panel p-5 rounded-2xl hidden">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 border-b border-zinc-800 pb-1.5 flex items-center justify-between">
+                                <span>Relational Schema Explorer</span>
+                                <button onclick="document.getElementById('schema-panel').classList.add('hidden')" class="text-zinc-500 hover:text-zinc-300">✕</button>
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-zinc-950/60 p-3 rounded-xl border border-zinc-800/80">
+                                    <h4 class="text-xs font-extrabold text-indigo-400 font-mono mb-2">📚 Books</h4>
+                                    <ul class="text-[11px] space-y-1 text-zinc-400 font-mono">
+                                        <li><strong class="text-zinc-200">Book_ID:</strong> INTEGER (PK)</li>
+                                        <li><strong class="text-zinc-200">Title:</strong> VARCHAR(100)</li>
+                                        <li><strong class="text-zinc-200">Author:</strong> VARCHAR(100)</li>
+                                        <li><strong class="text-zinc-200">Genre:</strong> VARCHAR(50)</li>
+                                        <li><strong class="text-zinc-200">Published_Year:</strong> INTEGER</li>
+                                        <li><strong class="text-zinc-200">Price:</strong> DECIMAL(10,2)</li>
+                                        <li><strong class="text-zinc-200">Stock:</strong> INTEGER</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-zinc-950/60 p-3 rounded-xl border border-zinc-800/80">
+                                    <h4 class="text-xs font-extrabold text-emerald-400 font-mono mb-2">👥 Customers</h4>
+                                    <ul class="text-[11px] space-y-1 text-zinc-400 font-mono">
+                                        <li><strong class="text-zinc-200">Customer_ID:</strong> INTEGER (PK)</li>
+                                        <li><strong class="text-zinc-200">Name:</strong> VARCHAR(100)</li>
+                                        <li><strong class="text-zinc-200">Email:</strong> VARCHAR(100)</li>
+                                        <li><strong class="text-zinc-200">Phone:</strong> VARCHAR(15)</li>
+                                        <li><strong class="text-zinc-200">City:</strong> VARCHAR(50)</li>
+                                        <li><strong class="text-zinc-200">Country:</strong> VARCHAR(150)</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-zinc-950/60 p-3 rounded-xl border border-zinc-800/80">
+                                    <h4 class="text-xs font-extrabold text-purple-400 font-mono mb-2">🛒 Orders</h4>
+                                    <ul class="text-[11px] space-y-1 text-zinc-400 font-mono">
+                                        <li><strong class="text-zinc-200">Order_ID:</strong> INTEGER (PK)</li>
+                                        <li><strong class="text-zinc-200">Customer_ID:</strong> INTEGER (FK)</li>
+                                        <li><strong class="text-zinc-200">Book_ID:</strong> INTEGER (FK)</li>
+                                        <li><strong class="text-zinc-200">Order_Date:</strong> DATE (YYYY-MM-DD)</li>
+                                        <li><strong class="text-zinc-200">Quantity:</strong> INTEGER</li>
+                                        <li><strong class="text-zinc-200">Total_Amount:</strong> DECIMAL(10,2)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Query Execution Error Display -->
+                        <div id="sql-error-container" class="bg-rose-950/30 border border-rose-900/40 rounded-2xl p-5 hidden">
+                            <div class="flex items-start space-x-3">
+                                <div class="p-1 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-rose-300">SQLite Execution Error</h4>
+                                    <p id="error-text-display" class="text-xs text-rose-400 font-mono mt-1.5 leading-relaxed break-all"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Panel -->
+                        <div id="sql-result-container" class="glass-panel rounded-2xl overflow-hidden hidden flex flex-col">
+                            
+                            <!-- Header / Metadata bar -->
+                            <div class="px-5 py-4 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-3 bg-zinc-900/20">
+                                <div id="query-meta-stats" class="text-xs font-bold font-mono text-zinc-400 flex items-center gap-4">
+                                    <!-- Loaded by JS -->
+                                </div>
+                                <button id="export-csv-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700/80 border border-zinc-700/40 transition-colors flex items-center gap-1.5 text-zinc-300">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                    </svg>
+                                    Export CSV
+                                </button>
+                            </div>
+
+                            <!-- Table Scroll Wrapper -->
+                            <div class="overflow-x-auto max-h-[380px] scrollbar-thin">
+                                <table class="min-w-full divide-y divide-zinc-800 text-left">
+                                    <thead class="bg-zinc-900/30 sticky top-0 z-10 backdrop-blur">
+                                        <tr id="table-header-row">
+                                            <!-- Columns load dynamically -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-body-rows" class="divide-y divide-zinc-800/40">
+                                        <!-- Rows load dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination controls -->
+                            <div class="px-5 py-3 border-t border-zinc-800 flex items-center justify-between flex-wrap gap-3 bg-zinc-900/10">
+                                <span id="pagination-info" class="text-xs font-medium text-zinc-500">
+                                    Showing 0-0 of 0 records
+                                </span>
+                                <div class="flex items-center space-x-2">
+                                    <button id="pagination-prev" class="px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800 text-xs font-semibold hover:bg-zinc-700 transition-colors">
+                                        Previous
+                                    </button>
+                                    <button id="pagination-next" class="px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800 text-xs font-semibold hover:bg-zinc-700 transition-colors">
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 3: DATABASE EXPLORER -->
+            <section id="tab-explorer" class="tab-content space-y-6">
+                
+                <div class="glass-panel p-6 rounded-2xl space-y-6">
+                    <div>
+                        <h2 class="text-lg font-extrabold tracking-tight text-zinc-100">📂 Raw Database Tables</h2>
+                        <p class="text-xs text-zinc-400 mt-1">Explore the first 50 rows of each of the relational tables loaded into memory.</p>
+                    </div>
+
+                    <!-- Inner tab navigation for tables -->
+                    <div class="border-b border-zinc-800">
+                        <div class="flex space-x-6 text-sm font-semibold" id="explorer-tabs">
+                            <button onclick="switchExplorerTab('books')" id="explorer-btn-books" class="border-b-2 border-indigo-500 pb-3 text-indigo-400 transition-all focus:outline-none">
+                                📚 Books Table (500 Rows)
+                            </button>
+                            <button onclick="switchExplorerTab('customers')" id="explorer-btn-customers" class="border-b-2 border-transparent pb-3 text-zinc-400 hover:text-zinc-200 transition-all focus:outline-none">
+                                👥 Customers Table (500 Rows)
+                            </button>
+                            <button onclick="switchExplorerTab('orders')" id="explorer-btn-orders" class="border-b-2 border-transparent pb-3 text-zinc-400 hover:text-zinc-200 transition-all focus:outline-none">
+                                🛒 Orders Table (500 Rows)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Books Raw Data -->
+                    <div id="explorer-panel-books" class="explorer-table-content overflow-x-auto max-h-[500px] border border-zinc-800/80 rounded-xl scrollbar-thin">
+                        <table class="min-w-full divide-y divide-zinc-800 text-left">
+                            <thead class="bg-zinc-900/50 sticky top-0 backdrop-blur">
+                                <tr id="explorer-header-books"></tr>
+                            </thead>
+                            <tbody id="explorer-body-books"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Customers Raw Data -->
+                    <div id="explorer-panel-customers" class="explorer-table-content overflow-x-auto max-h-[500px] border border-zinc-800/80 rounded-xl scrollbar-thin hidden">
+                        <table class="min-w-full divide-y divide-zinc-800 text-left">
+                            <thead class="bg-zinc-900/50 sticky top-0 backdrop-blur">
+                                <tr id="explorer-header-customers"></tr>
+                            </thead>
+                            <tbody id="explorer-body-customers"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Orders Raw Data -->
+                    <div id="explorer-panel-orders" class="explorer-table-content overflow-x-auto max-h-[500px] border border-zinc-800/80 rounded-xl scrollbar-thin hidden">
+                        <table class="min-w-full divide-y divide-zinc-800 text-left">
+                            <thead class="bg-zinc-900/50 sticky top-0 backdrop-blur">
+                                <tr id="explorer-header-orders"></tr>
+                            </thead>
+                            <tbody id="explorer-body-orders"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 4: DOCUMENTATION & ABOUT -->
+            <section id="tab-docs" class="tab-content space-y-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Documentation Content -->
+                    <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-6 text-zinc-300">
+                        <div>
+                            <h2 class="text-xl font-extrabold tracking-tight text-zinc-100">📖 Project Documentation & Problem Statement</h2>
+                            <p class="text-xs text-zinc-400 mt-1">Analyzing the Online Bookstore relational database model.</p>
+                        </div>
+                        
+                        <div class="space-y-4 text-sm leading-relaxed">
+                            <h3 class="text-base font-bold text-zinc-200 border-b border-zinc-800 pb-1">1. Business Problem Scenario</h3>
+                            <p>
+                                An emerging **Online Bookstore** has compiled data across three separate operational sectors: inventory items (**Books**), client demographic info (**Customers**), and transaction records (**Orders**). 
+                            </p>
+                            <p>
+                                Management requires data-driven answers to answer fundamental operational questions, identify trends, and automate replenishment strategies.
+                            </p>
+                            
+                            <h3 class="text-base font-bold text-zinc-200 border-b border-zinc-800 pb-1 mt-6">2. Schema Description</h3>
+                            <p>
+                                The database schema consists of three normalized entities linked via primary and foreign key relationships:
+                            </p>
+                            <ul class="list-disc pl-5 space-y-2">
+                                <li><strong>Books:</strong> Manages the catalog. Tracks identifiers, titles, author credentials, literary genre classifications, publication year, store price, and warehouse stock units.</li>
+                                <li><strong>Customers:</strong> Logs membership registry. Contains contact coordinates, emails, telephone digits, and regional addresses (city, country).</li>
+                                <li><strong>Orders:</strong> Chronicles commercial activity. Captures sales dates, buyer IDs, product IDs, physical quantities purchased, and cash total amounts.</li>
+                            </ul>
+
+                            <h3 class="text-base font-bold text-zinc-200 border-b border-zinc-800 pb-1 mt-6">3. Technical Architecture</h3>
+                            <p>
+                                This dashboard showcases the queries in a fully serverless environment:
+                            </p>
+                            <ul class="list-disc pl-5 space-y-2">
+                                <li><strong>WebAssembly Core:</strong> SQLite compile compiled to WASM (`sql.js`) loads parsed records in client-side memory.</li>
+                                <li><strong>No Latency Mocking:</strong> Instead of fetching API mock files, queries are directly evaluated on the WebAssembly runtime in milliseconds.</li>
+                                <li><strong>Responsive UI:</strong> Built using glassmorphic UI elements and CSS layout tokens.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- ER Diagram & GitHub deployment sidebar -->
+                    <div class="space-y-6">
+                        
+                        <!-- Entity Relationship Diagram Card -->
+                        <div class="glass-panel p-5 rounded-2xl">
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-4 border-b border-zinc-800 pb-2">
+                                Entity Relationship Diagram
+                            </h3>
+                            
+                            <!-- Custom HTML/CSS/SVG ER Diagram -->
+                            <div class="space-y-4 font-mono text-xs">
+                                <div class="bg-indigo-950/20 p-2.5 rounded-lg border border-indigo-900/30">
+                                    <div class="font-bold text-indigo-400">CUSTOMERS</div>
+                                    <div class="text-[10px] text-zinc-500">Customer_ID (PK)</div>
+                                    <div class="text-[10px] text-zinc-500">Name | Email | Country</div>
+                                </div>
+                                <div class="flex justify-center text-zinc-600">
+                                    <span>│ (1)</span>
+                                </div>
+                                <div class="flex justify-center text-zinc-600">
+                                    <span>▼ (0..N)</span>
+                                </div>
+                                <div class="bg-purple-950/20 p-2.5 rounded-lg border border-purple-900/30">
+                                    <div class="font-bold text-purple-400">ORDERS</div>
+                                    <div class="text-[10px] text-zinc-500">Order_ID (PK)</div>
+                                    <div class="text-[10px] text-zinc-500 font-bold">Customer_ID (FK) ➔ Customers</div>
+                                    <div class="text-[10px] text-zinc-500 font-bold">Book_ID (FK) ➔ Books</div>
+                                    <div class="text-[10px] text-zinc-500">Order_Date | Qty | Total</div>
+                                </div>
+                                <div class="flex justify-center text-zinc-600">
+                                    <span>▲ (0..N)</span>
+                                </div>
+                                <div class="flex justify-center text-zinc-600">
+                                    <span>│ (1)</span>
+                                </div>
+                                <div class="bg-emerald-950/20 p-2.5 rounded-lg border border-emerald-900/30">
+                                    <div class="font-bold text-emerald-400">BOOKS</div>
+                                    <div class="text-[10px] text-zinc-500">Book_ID (PK)</div>
+                                    <div class="text-[10px] text-zinc-500">Title | Author | Price | Stock</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="border-t border-zinc-800/50 py-4 bg-zinc-950 text-center text-xs text-zinc-500">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-2">
+                <span>SQL Portfolio Analytics Engine © 2026. Powered by Python, SQLite & Chart.js.</span>
+                <span class="font-mono text-[10px]">Processed dataset size: 1,500 active records.</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts (Import data structure and logic) -->
+
+    <script src="app.js"></script>
+    <script>
+        // Data Explorer internal tabs switching handler
+        function switchExplorerTab(table) {
+            // Remove active classes from buttons
+            const buttons = document.querySelectorAll("#explorer-tabs button");
+            buttons.forEach(btn => {
+                btn.classList.remove("border-indigo-500", "text-indigo-400");
+                btn.classList.add("border-transparent", "text-zinc-400", "hover:text-zinc-200");
+            });
+
+            // Add active to selected button
+            const activeBtn = document.getElementById(`explorer-btn-${table}`);
+            activeBtn.classList.add("border-indigo-500", "text-indigo-400");
+            activeBtn.classList.remove("border-transparent", "text-zinc-400", "hover:text-zinc-200");
+
+            // Hide all explorer panels
+            document.querySelectorAll(".explorer-table-content").forEach(el => {
+                el.classList.add("hidden");
+            });
+
+            // Show active panel
+            document.getElementById(`explorer-panel-${table}`).classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
